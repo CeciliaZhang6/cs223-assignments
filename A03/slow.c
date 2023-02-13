@@ -14,14 +14,14 @@ int main() {
   char buffer[32];
   int pauseLen = 0;
 
-  char *result = NULL;
-  result = malloc(sizeof(char) * ((pauseLen + 1) * strlen(buffer) + 1));
-
   //prompt
   printf("Pause length: ");
   scanf("%d", &pauseLen);
   printf("Text: ");
   scanf("%s", buffer);
+
+  char *result = NULL;
+  result = malloc(sizeof(char) * ((pauseLen + 1) * strlen(buffer) + 1));
   
   int index = 0; //for result char
   for (int i = 0; i < strlen(buffer); i++) { //append each char in the word
