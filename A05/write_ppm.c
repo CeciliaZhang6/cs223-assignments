@@ -17,7 +17,7 @@
 * No return.
 */
 void write_ppm(const char* filename, struct ppm_pixel* pixels, int w, int h) {
-  FILE *outfile = fopen(filename, "rb");
+  FILE *outfile = fopen(filename, "wb");
 
   //write title lines
   fprintf(outfile, "%s\n", "P6");
