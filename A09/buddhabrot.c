@@ -1,6 +1,6 @@
 /*----------------------------------------------
  * Author: Cecilia Zhang
- * Date: 04/04/2023
+ * Date: 04/11/2023
  * Description: Generates mandelbrot images (in ppm files) using 4 threads,
  *    each thread is in charge of a quadrant. Colors are randomnized. 
  ---------------------------------------------*/
@@ -38,8 +38,9 @@ struct threadArgs {
 };
 
 /**
-* Thread function. Computes quadrants of the mandelbrot images using given data. 
-* @param inputData all data required to compute. See struct above for more info. 
+* Thread function #1. Determine points in each quadrant if belongs to 
+* the mandelbrot set or not.
+* @param inputData all data required to compute. See struct above for detail. 
 */
 void *findMember(void* inputData) {
   // cast input to struct
@@ -94,6 +95,11 @@ void *findMember(void* inputData) {
   return NULL;
 }
 
+/**
+* Thread function #2. Tracks the number of times visited in each
+* coordinate (pixel) for each escaped points. Also finds out the max count. 
+* @param inputData all data required to compute. See struct above for detail. 
+*/
 void *findCounts(void* inputData) {
   // cast input to struct
   struct threadArgs * myArgs = (struct threadArgs *) inputData;
@@ -135,10 +141,11 @@ void *findCounts(void* inputData) {
         xcol = round(size * (x - xmin)/ (xmax - xmin));
         if (yrow < 0 || yrow >= size) continue; // out of range
         if (xcol < 0 || xcol >= size) continue; // out of range9          
-        index = xcol * size + yrow;
-
+        
         // update count 
+        index = xcol * size + yrow;
         myArgs->count[index]++;
+        // update max count
         if (myArgs->count[index] > myArgs->maxCount){
           pthread_mutex_lock(&mutex);
           myArgs->maxCount = myArgs->count[index];
@@ -150,6 +157,11 @@ void *findCounts(void* inputData) {
   return NULL;
 }
 
+/**
+* Thread function #3. Computes color based on the counts from function #2. 
+* Stores colors into a pixel array. 
+* @param inputData all data required to compute. See struct above for detail. 
+*/
 void *computeColors(void* inputData) {
   float gamma = 0.681;
   float factor = 1.0/gamma;
@@ -181,6 +193,10 @@ void *computeColors(void* inputData) {
   return NULL;
 }
 
+/**
+* Thread function driver. Performs all steps.  
+* @param inputData all data required to compute. See struct above for detail. 
+*/
 void *start(void* inputData) {
   struct threadArgs * myArgs = (struct threadArgs *) inputData;
   
