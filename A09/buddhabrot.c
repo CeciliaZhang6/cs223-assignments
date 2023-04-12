@@ -1,8 +1,8 @@
 /*----------------------------------------------
  * Author: Cecilia Zhang
  * Date: 04/11/2023
- * Description: Generates mandelbrot images (in ppm files) using 4 threads,
- *    each thread is in charge of a quadrant. Colors are randomnized. 
+ * Description: Generates buddhabrot images (in ppm files) using 4 threads,
+ *    each thread is in charge of a quadrant. 
  ---------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
