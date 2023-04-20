@@ -49,7 +49,7 @@ int main (int argc, char* argv[]) {
   request1 = malloc(sizeof(char) * 16);
   current = sbrk(0);
   check(flist == 0, "test 8: flist is empty");
-  check((current-init) == 32+16, "test9: correct amount allocated");
+  check((current-init) == 32+16, "test 9: correct amount allocated");
 
   header1 = (struct chunk*) ((struct chunk*) request1 - 1);
   check(header1->size == 32, "test 10: header size correct");

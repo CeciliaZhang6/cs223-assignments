@@ -1,3 +1,9 @@
+/*----------------------------------------------
+ * Author: Cecilia Zhang
+ * Date: 04/18/2023
+ * Description: Reports memory stats when running self-defined 
+ *              malloc and free.
+ ---------------------------------------------*/
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -17,6 +23,46 @@ struct chunk {
 };
 
 void memstats(struct chunk* freelist, void* buffer[], int len) {
+  // number of chunks in free list
+  int freeBlock = 0;
+  // number of chunks in buffer
+  int usedBlock = 0;
+  // total size allocated in buffer
+  int bufferSize = 0;
+  // total sized actually used in buffer
+  int usedSize = 0;
+  // total size used in free list
+  int freeSize = 0;
+  // percentage of allocated but not used memory in buffer
+  float underUtil = 0;
+
+  // compute stats for free list
+  while (freelist != NULL) {
+    freeBlock++;
+    freeSize += freelist->size;
+    // update pointer to next free block
+    freelist = freelist->next;
+  }
+
+  // compute stats for buffer
+  for (int i = 0; i < len; i++) {
+    if (buffer[i] != NULL){
+      usedBlock++;
+      struct chunk *header = (struct chunk *) ((struct chunk *) buffer[i] - 1);
+      bufferSize += header->size; 
+      usedSize += header->used;
+    }
+  }
+
+  // calculate underutilzed memory percentage
+  underUtil = 1.0 - ((float) usedSize / bufferSize);
+
+  // report status
+  printf("Total blocks: %d | Free blocks: %d | Used blocks: %d\n", freeBlock + usedBlock, 
+        freeBlock, usedBlock);
+  printf("Total memory allocated: %d | Free memory: %d | Used memory: %d\n", bufferSize + freeSize, 
+        freeSize, bufferSize);
+  printf("Underutilized memory: %.2f\n", underUtil);
 }
 
 int main ( int argc, char* argv[]) {
